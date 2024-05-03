@@ -11,10 +11,12 @@ contract Handler is Test {
     ERC20Mock weth;
 
 
-    uint256 startingY;
-    uint256 startingX;
-    uint256 expectedStartingY;
-    uint256 expectedStartingX;
+    int256 startingY;
+    int256 startingX;
+    int256 expectedDeltaY;
+    int256 expectedDeltaX;
+    int256 actualDeltaX;
+    int256 actualDeltaY;
     ERC20Mock poolToken;
 
     address liquidityPoolProvider = makeAddr("LP");
@@ -24,19 +26,33 @@ contract Handler is Test {
     poolToken = ERC20Mock(pool.getPoolToken());
     }
 
+function swapPoolTokenForWethBasedOnOutputWeth(uint256 outputWeth) public {
+   outputWeth = bound(outputWeth, 0 , type(uint64).max);
+
+   if(outputWeth >= weth.balanceOf(address(pool))) {
+    pool;
+   }
+}    
+
 function deposit(uint256 wethAmount) public {
 wethAmount = bound(wethAmount, 0, type(uint64).max);
-startingY = weth.balanceOf(address(this));
-startingX = poolToken.balanceOf(address(this));
-expectedStartingY = wethAmount;
-expectedStartingX = pool.getPoolTokensToDepositBasedOnWeth(wethAmount);
+startingY = int256(weth.balanceOf(address(this)));
+startingX = int256(poolToken.balanceOf(address(this)));
+expectedDeltaY = int256(wethAmount);
+expectedDeltaX = int256(pool.getPoolTokensToDepositBasedOnWeth(wethAmount));
 
 vm.startPrank(liquidityPoolProvider);
 weth.mint(liquidityPoolProvider,wethAmount);
-poolToken.mint(liquidityPoolProvider, expectedStartingX);
+poolToken.mint(liquidityPoolProvider, uint256(expectedDeltaX));
 weth.approve(address(pool), type(uint256).max);
 poolToken.approve(address(pool), type(uint256).max);
-pool.deposit(wethAmount,0,expectedStartingX, uint64(block.timestamp) );
+pool.deposit(wethAmount,0,uint256(expectedDeltaX), uint64(block.timestamp) );
 vm.stopPrank();
+
+uint256 endingY = weth.balanceOf(address(this));
+uint256 endingX = poolToken.balanceOf(address(this));
+
+actualDeltaX = int256(endingX) - int256(startingX);
+actualDeltaY = int256(endingY) - int256(endingY);
 }
 }
