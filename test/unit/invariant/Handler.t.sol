@@ -20,6 +20,7 @@ contract Handler is Test {
     ERC20Mock poolToken;
 
     address liquidityPoolProvider = makeAddr("LP");
+    address swapper = makeAddr("swapper"); 
     constructor(TSwapPool _pool) {
     pool =_pool;
     weth =ERC20Mock(pool.getWeth());
@@ -30,9 +31,36 @@ function swapPoolTokenForWethBasedOnOutputWeth(uint256 outputWeth) public {
    outputWeth = bound(outputWeth, 0 , type(uint64).max);
 
    if(outputWeth >= weth.balanceOf(address(pool))) {
-    pool;
+    return;
    }
-}    
+
+    uint256 poolTokenAmount = pool.getInputAmountBasedOnOutput(outputWeth, poolToken.balanceOf(address(pool)), weth.balanceOf(address(pool)));
+
+   if(poolTokenAmount > type(uint64).max){
+    return;
+   }
+
+   startingY = int256(weth.balanceOf(address(this)));
+startingX = int256(poolToken.balanceOf(address(this)));
+expectedDeltaY =int256(-1) * int256(outputWeth);
+expectedDeltaX = int256(pool.getPoolTokensToDepositBasedOnWeth(poolTokenAmount));
+
+if(poolToken.balanceOf(swapper) < poolTokenAmount) {
+    poolToken.mint(swapper, poolTokenAmount - poolToken.balanceOf(swapper ) +1);
+}
+
+vm.startPrank(swapper);
+poolToken.approve(address(pool), type(uint256).max);
+pool.swapExactOutput(poolToken, weth, outputWeth, uint64(block.timestamp));
+vm.stopPrank();
+
+uint256 endingY = weth.balanceOf(address(this));
+uint256 endingX = poolToken.balanceOf(address(this));
+
+actualDeltaX = int256(endingX) - int256(startingX);
+actualDeltaY = int256(endingY) - int256(endingY);
+}
+ 
 
 function deposit(uint256 wethAmount) public {
 wethAmount = bound(wethAmount, 0, type(uint64).max);

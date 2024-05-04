@@ -9,7 +9,7 @@ import {PoolFactory} from "src/PoolFactory.sol";
 import {TSwapPool} from "test/unit/TSwapPool.t.sol";
 
 contract Invariant is StdInvariant, Test {
-   /* ERC20Mock poolToken;
+    ERC20Mock poolToken;
     ERC20Mock weth;
 
     PoolFactory factory;
@@ -18,9 +18,9 @@ contract Invariant is StdInvariant, Test {
     int256 STARTING_X_AMOUNT = 100e18;
     int256 STARTING_Y_AMOUNT = 50e18;
     function setUp() public {
-        poolToken = ERC20Mock();
-        weth = ERC20Mock();
-        factory = new PoolFactory(ERC20Mock(weth));
+        poolToken = new ERC20Mock();
+        weth = new ERC20Mock();
+        factory = new PoolFactory(address(weth));
         pool = TSwapPool(factory.createPool(address(poolToken)));
 
         poolToken.mint(address(this), uint256(STARTING_X_AMOUNT));
@@ -31,5 +31,5 @@ contract Invariant is StdInvariant, Test {
 
         pool.deposit(uint256(STARTING_X_AMOUNT), uint256(STARTING_X_AMOUNT),uint256(STARTING_Y_AMOUNT), uint64(block.timestamp) );
     }
-    */
+    
 }
