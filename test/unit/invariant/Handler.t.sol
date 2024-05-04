@@ -11,12 +11,12 @@ contract Handler is Test {
     ERC20Mock weth;
 
 
-    int256 startingY;
-    int256 startingX;
-    int256 expectedDeltaY;
-    int256 expectedDeltaX;
-    int256 actualDeltaX;
-    int256 actualDeltaY;
+    int256 public startingY;
+    int256 public startingX;
+    int256 public expectedDeltaY;
+    int256 public expectedDeltaX;
+    int256 public actualDeltaX;
+    int256 public actualDeltaY;
     ERC20Mock poolToken;
 
     address liquidityPoolProvider = makeAddr("LP");
